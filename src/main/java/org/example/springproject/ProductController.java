@@ -2,6 +2,7 @@ package org.example.springproject;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.springproject.dto.CategoryDTO;
 import org.example.springproject.dto.ProductDTO;
 import org.example.springproject.models.Category;
 import org.example.springproject.models.Product;
@@ -40,6 +41,7 @@ public class ProductController {
     }
 */
     private final IProductService productService;
+
     @GetMapping("/products")
     public ResponseEntity<List<ProductDTO>> getProductList() {
         List<Product> response =  productService.getAllProductDetails();
@@ -87,7 +89,13 @@ public class ProductController {
     private ProductDTO from(Product product) {
         return ProductDTO.builder().id(product.getId()).description(product.getDescription())
                 .title(product.getName()).price(product.getPrice())
-                .categoryDTO(product.getCategory().getCategoryName()).build();
+                .categoryDTO(CategoryDTO.builder()
+                        .id(product.getCategory().getId())
+                        .name(product.getCategory().getCategoryName())
+                        .description(product.getCategory().getCategoryDescription())
+                        .build())
+                .build();
+
 
     }
 
@@ -102,7 +110,8 @@ public class ProductController {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         Category category = new Category();
-        category.setCategoryName(productDTO.getCategoryDTO());
+        category.setCategoryName(productDTO.getCategoryDTO().getName());
+        category.setId(productDTO.getCategoryDTO().getId());
         product.setCategory(category);
         return product;
     }
